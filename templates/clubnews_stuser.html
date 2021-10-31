@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome - {{ loguser }}</title>
+
+    <!-- Bootstrap -->
+     <link href="{{ url_for('static',filename='css/bootstrap-4.4.1.css') }}" rel="stylesheet"> 
+	 <link href="css/bootstrap-4.4.1.css" rel="stylesheet"> 
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+       <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+			  <li class="nav-item">
+                <a class="nav-link" href="javascript:{}" onclick="submit_home()">Home</a>
+             </li>
+             <li class="nav-item active">
+                <a class="nav-link" href="#">Club News</a>
+             </li>
+             <li class="nav-item">
+                <a class="nav-link" href="javascript:{}" onclick="submit_profile()">Profile</a>
+             </li>
+             <li class="nav-item">
+                <a class="nav-link" href="javascript:{}" onclick="submit_fixture()">Fixtures</a>
+             </li>
+			  <li class="nav-item">
+                <a class="nav-link" href="/">Logout <span class="sr-only">(current)</span></a>
+             </li>
+          </ul>
+          
+       </div>
+    </nav>
+
+    <div class="jumbotron jumbotron-fluid text-center">
+       
+		<h1 class="display-4">{{ clubname }} News </h1>
+		<p class="lead">Latest 3 news for the club</p>
+       <hr class="my-4">
+       <p>Member Name:&nbsp; <div class="alert-primary">{{ loguser }}</div></p>
+	   <p>Member ID:&nbsp; {{ memberid }}</p>
+		<p>Member Type:&nbsp; <span class="alert-success">Standard Member</span></p>
+	<form action="/standarduser" id="stuserform" name="stuserform" method="POST">
+		<input type="hidden" name="memberid" id="memberid" value={{ memberid }}>
+		<input type="hidden" name="memname" id="memname" value={{ loguser }}>
+		<input type="hidden" name="pagename" id="pagename">
+	</form>
+  </div>
+
+	<div class="text-left">
+		{% for clubnewsdet in clubnews%}
+		  <div class="card text-center col-md-4 border-dark border-2" style="display:inline; float:left;">
+			  <div class="card-header bg-primary text-white"> {{ clubnewsdet[2] }} </div>
+			  <div class="card-body">
+				<h5 class="card-title">{{ clubnewsdet[0] }}</h5>
+				<p class="card-text">{{ clubnewsdet[1] }}</p>
+			  </div>
+			  <div class="card-footer text-muted "> {{ clubnewsdet[3] }} </div>
+		  </div>
+		<div style="display:inline; float:left;">&nbsp;&nbsp;</div>
+		{% endfor %}
+    </div>
+
+	
+    
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
+    <script src="js/jquery-3.4.1.min.js"></script>
+
+    <!-- Include all compiled plugins (below), or include individual files as needed --> 
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap-4.4.1.js"></script>
+		<script language="javascript">
+		function submit_home(){
+			document.getElementById("pagename").value = "home_stuser";
+			document.getElementById('stuserform').submit();
+		}
+		
+		function submit_profile(){
+			document.getElementById("pagename").value = "profile_stuser";
+			document.getElementById('stuserform').submit();
+		}
+		function submit_fixture(){
+			document.getElementById("pagename").value = "fixtures_stuser";
+			document.getElementById('stuserform').submit();
+		}
+	</script>
+  </body>
+</html>

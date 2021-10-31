@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rugby Systems</title>
+
+    <!-- Bootstrap -->
+     <link href="{{ url_for('static',filename='css/bootstrap-4.4.1.css') }}" rel="stylesheet">
+	 <!-- <link href="css/bootstrap-4.4.1.css" rel="stylesheet"> -->
+	<script type = "text/javascript" 
+         src = "{{ url_for('static', filename = 'hello.js') }}" ></script>
+	</head>
+  <body>
+
+    <div class="jumbotron jumbotron-fluid text-center">
+       <h1 class="display-4">Welcome to <br>Rugby Sports Club</h1>
+       <p class="lead">This is entrance to the Rugby system</p>
+       
+    </div>
+	<form action="/login" id="LoginForm" name="LoginForm" method="POST">
+		<div class="container">
+		   <div class="row text-center">
+
+				<div class="col-lg-6 offset-lg-3"> 
+				<select name="member_name" id="member_name">
+					<option SELECTED value='0'>Choose your name to login</option>
+					{% for id,name in memname.items() %}
+					  <option value= '{{ id }}'>{{name}}</option>
+					{% endfor %}
+				</select>
+				<hr>
+			   <p class="lead">
+			  <a class="btn btn-primary btn-lg" href="javascript:{}" onclick="document.getElementById('LoginForm').submit();" role="button">Login</a>
+		   </p>
+			   </div>
+		   </div>
+		</div>
+	  </form>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
+    <script src="js/jquery-3.4.1.min.js"></script>
+
+    <!-- Include all compiled plugins (below), or include individual files as needed --> 
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap-4.4.1.js"></script>
+  </body>
+</html>
