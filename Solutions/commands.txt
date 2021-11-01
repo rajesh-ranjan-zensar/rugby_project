@@ -1,0 +1,17 @@
+pip install virtualenv
+mkdir rugby_proj
+cd rugby_proj
+virtualenv venv
+venv\scripts\activate
+
+pip install Flask
+
+install mysql connector for python
+--------------------------------------
+pip install mysql-connector-python
+
+
+
+to start the server
+=======================
+python rugby_main.py
