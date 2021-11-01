@@ -158,6 +158,24 @@ def getMemberDetails(DBHandler,p_memberid, p_fetch_all):
             v_err = "Failed to find member: " + str(e)
             return v_err
 
+## Get the grade details. 
+def getGradeDetails(DBHandler, p_grade_id=0):
+    retVal={}
+    if p_grade_id == 0: 
+        vSQLQuery = "select gradeid,concat(gradename , ' (From Age ' , grademinimumage, ' To ',grademaximumage,' Years)') from grades"
+    else:
+        vSQLQuery = "select gradeid,concat(gradename , ' (From Age ' , grademinimumage, ' To ',grademaximumage,' Years)') from grades where gradeid=" + str(p_grade_id)
+    try:
+        print(vSQLQuery)
+        DBHandler.cursor.execute(vSQLQuery)
+        for v_rec in DBHandler.cursor:
+            retVal[v_rec[0]] = v_rec[1]
+        return retVal
+    except Error as e:
+        print("Error while getting team details", e)
+        v_err = "Failed to find teams: " + str(e)
+        return v_err
+
 ## Save the member details in database (this will be used to add new member or to update the existing member)
 def saveMemberDetails(DBHandler,
                     p_memberid,
@@ -217,3 +235,95 @@ def saveMemberDetails(DBHandler,
         DBHandler.cursor.execute(vSQLQuery)
         DBHandler.DBcon.commit()
         print(DBHandler.cursor.rowcount, "record(s) affected")
+
+## Get list of all active/inactive members
+def getAllMembers(DBHandler,p_status):
+    vSQLQuery = "select m.memberid,c.clubname, t.teamname, "
+    vSQLQuery += "memberfirstname, memberlastname, address1, address2, city, m.email, m.phone, m.birthdate, "
+    vSQLQuery += "if(m.membershipstatus=1,'Active','Inactive'), "
+    vSQLQuery += "if(m.adminaccess=1,'Admin User','Standard User') "
+    vSQLQuery += "from members m left  join clubs c on (m.clubid = c.clubid) "
+    vSQLQuery += "left  join teams t on (m.teamid = t.teamid and c.clubid = t.clubid) "
+    vSQLQuery += "where m.membershipstatus=" + str(p_status)
+
+    DBHandler.cursor.execute(vSQLQuery)
+    retVal = DBHandler.cursor.fetchall()
+    return retVal
+
+## Get team details for team admin page
+def getTeamDet(DBHandler,p_team_id):
+    vSQLQuery = "select teamid,clubid, teamname,teamgrade from teams where teamid = " + str(p_team_id)
+    DBHandler.cursor.execute(vSQLQuery)
+    retVal = DBHandler.cursor.fetchone()
+    return retVal
+
+
+def saveTeamDetails(DBHandler,
+                    p_teamid,
+                    p_clubid,
+                    p_teamname,
+                    p_teamgrade
+                    ):
+    vSQLQuery = "select count(1) from teams where teamid="+str(p_teamid)
+    print(vSQLQuery)
+    DBHandler.cursor.execute(vSQLQuery)
+    for v_rec in DBHandler.cursor:
+            v_cnt = v_rec[0]
+    print(v_rec[0])
+    v_cnt = v_rec[0]
+    print("Total recoreds found: ",v_cnt)
+    v_ClubID = p_clubid
+    v_gradeid = p_teamgrade
+    if v_cnt == 0:
+        if v_ClubID == "0":
+            v_ClubID = "null"
+        if v_gradeid == "0":
+            v_gradeid = "null"
+
+        vSQLQuery = "INSERT INTO teams VALUES ("
+        vSQLQuery += str(p_teamid) + "," + str(v_ClubID) + ",'" + str(p_teamname) + "'," + str(v_gradeid)  +")"
+        print(vSQLQuery)
+        DBHandler.cursor.execute(vSQLQuery)
+        DBHandler.DBcon.commit()
+        print(DBHandler.cursor.rowcount, "record(s) affected")
+    elif v_cnt > 0:
+        vSQLQuery = "UPDATE teams SET "
+        vSQLQuery += "clubid='"+ str(v_ClubID) +"', "
+        vSQLQuery += "teamname='"+ str(p_teamname) +"', "
+        vSQLQuery += "teamgrade='"+ str(v_gradeid) + "' where teamid=" + str(p_teamid)
+        print(vSQLQuery)
+        DBHandler.cursor.execute(vSQLQuery)
+        DBHandler.DBcon.commit()
+        print(DBHandler.cursor.rowcount, "record(s) affected")
+### Get all teams
+def getAllTeams(DBHandler):
+    vSQLQuery = """select t.teamid,c.clubname,t.teamname, g.gradename 
+                from teams t 
+                    left join clubs c on (t.clubid = c.clubid) 
+                    left join grades g on (t.teamgrade = g.gradeid)"""
+    DBHandler.cursor.execute(vSQLQuery)
+    retVal = DBHandler.cursor.fetchall()
+    return retVal
+
+##### Get grade eligibility criteria
+def getGradeCriteria(DBHandler, p_gradeid):
+    vSQLQuery = "select GradeMinimumAge, GradeMaximumAge from grades where gradeid=" + str(p_gradeid)
+    print(vSQLQuery)
+    DBHandler.cursor.execute(vSQLQuery)
+    retVal = DBHandler.cursor.fetchone()
+    return retVal
+
+##### Get list of eligible members for grade
+def getEligibleGradeMember(DBHandler, p_min_age,p_max_age, p_elig_date):
+
+    vSQLQuery = "select MemberFirstName, MemberLastName, birthdate, age "
+    vSQLQuery += "from (select m.MemberFirstName, "
+    vSQLQuery += "m.MemberLastName, "
+    vSQLQuery += "m.birthdate, "
+    vSQLQuery += "DATE_FORMAT('" + str(p_elig_date) +"', '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT('" + str(p_elig_date) +"', '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d')) AS age "
+    vSQLQuery += "from members m) as elgible_member "
+    vSQLQuery +=  "where age between " + str(p_min_age) + " and " + str(p_max_age)
+    print(vSQLQuery)
+    DBHandler.cursor.execute(vSQLQuery)
+    retVal = DBHandler.cursor.fetchall()
+    return retVal

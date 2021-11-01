@@ -134,16 +134,21 @@ def menu_navigate():
       memberid = request.form.get("memberid")
       memname = request.form.get("memname")
       pagename = request.form.get("pagename")
+      action = request.form.get("action")
       print(memname)
-      print(pagename)
+      print("Pagename: ",pagename)
+      print("Action: ",action)
       vclubdet = getClubDetails(dbconn)
       vteamdet = getTeamsDetails(dbconn)
+      vgradedet = getGradeDetails(dbconn)
       if pagename == "member_insert":
          vnextmember = getNextID(dbconn,"members","memberid")
          print("Next memberid: ",vnextmember)
          return render_template('member_admin_user.html', dbaction="INSERT",clubsdet=vclubdet,teamsdet=vteamdet,loguser=memname,vclubid=0,vteamid=0,memberid=vnextmember)
       if pagename == "member_update":
          return render_template('member_admin_user.html', dbaction="UPDATE",clubsdet=vclubdet,teamsdet=vteamdet, loguser=memname,vclubid=0,vteamid=0)
+      if pagename == "member_list":
+         return render_template('member_admin_user_report.html')
       if pagename == "admingetmemberdetail":
          dbmemberid=request.form.get("intmemberid")
          print("Getting details for member id ", dbmemberid)
@@ -190,6 +195,97 @@ def menu_navigate():
                            v_Email,v_Phone,v_Birthdate,v_MembershipStatus,v_AdminAccess)
          
          return render_template('member_admin_user.html', dbaction="UPDATE",clubsdet=vclubdet,teamsdet=vteamdet, loguser=memname,vclubid=0,vteamid=0)
+
+      if pagename == "memberlist" and action == "getlist":
+         v_status = request.form.get("drpstatus")
+         print("pagename: ",pagename)
+         print("action: ",action)
+         print(v_status)
+         memdet = getAllMembers(dbconn,v_status)
+         return render_template('member_admin_user_report.html', memdet = memdet)
+      ### for Teams
+      if pagename == "team_insert":
+         vnextteamid = getNextID(dbconn,"teams","teamid")
+         print("Next memberid: ",vnextteamid)
+         return render_template('teams_admin_user.html', action="INSERT",clubsdet=vclubdet,gradedet=vgradedet,loguser=memname,vclubid=0,vteamid=0,txtteamid=vnextteamid)
+      if pagename == "team_update":
+         return render_template('teams_admin_user.html', action="UPDATE",clubsdet=vclubdet,gradedet=vgradedet,loguser=memname,vclubid=0,vteamid=0)
+      if pagename == "teamadmin" and action == "fetch_team_details":
+         vteamid=request.form.get("txtteamid")
+         print("Getting details for member id ", vteamid)
+         teamdet = getTeamDet(dbconn,vteamid)
+         print("club id ", teamdet[1])
+         print(teamdet)
+         return render_template('teams_admin_user.html', dbaction="UPDATE",
+                                 loguser=memname,
+                                 clubsdet=vclubdet,
+                                 gradedet=vgradedet, 
+                                 txtteamid=teamdet[0], 
+                                 txtteamname=teamdet[2],
+                                 vclubid=teamdet[1],
+                                 vgradeid=teamdet[3]
+                                 )
+      if pagename == "teamadmin" and action == "saveteamdetail":
+         memid = request.form.get("memberid")
+         memname=request.form.get("memname")
+
+         v_teamid = request.form.get("txtteamid")
+         v_clubid = request.form.get("drpclubname")
+         v_teamname = request.form.get("txtteamname")
+         v_gradeid = request.form.get("drpgrade")
+         
+         print("savintg data for teamid ",v_teamid)
+         saveTeamDetails(dbconn,v_teamid,v_clubid,v_teamname,v_gradeid)
+         
+         return render_template('teams_admin_user.html', dbaction="UPDATE",clubsdet=vclubdet,gradedet=vgradedet,loguser=memname,vclubid=0,v_gradeid=0)
+      if pagename == "team_list":
+         v_status = request.form.get("drpstatus")
+         print("pagename: ",pagename)
+         print("action: ",action)
+         print(v_status)
+         teamdet = getAllTeams(dbconn)
+         return render_template('team_admin_user_report.html', teamdet = teamdet)
+      ###### grade eligibility report
+      if pagename == "grade_elig_report" and action == "load_page":
+         return render_template('grade_eligiblity_report.html', gradedet=vgradedet,loguser=memname)
+      if pagename == "grade_elig_report" and action == "load_criteria":
+         v_gradeid = request.form.get("drpgrade")
+         print("Selected gradeid ",v_gradeid)
+         gradedet = getGradeCriteria(dbconn,v_gradeid)
+         print("Min age: ",gradedet[0])
+         print("Max age: ",gradedet[1])
+         print("Grade id: ",v_gradeid)
+         return render_template('grade_eligiblity_report.html', gradedet=vgradedet,
+                                 loguser=memname, 
+                                 grademinage = gradedet[0], 
+                                 grademaxage = gradedet[1], 
+                                 gradeid = v_gradeid)
+      if pagename == "grade_elig_report" and action == "load_report":
+         v_min_age = request.form.get("grademinage")
+         v_max_age = request.form.get("grademaxage")
+         v_gradeid = request.form.get("gradeid")
+         v_elig_date = request.form.get("eligibledate")
+         print("Min: ",v_min_age)
+         print("Max: ",v_max_age)
+         print("Grade id: ",v_gradeid)
+         print("Date: ",v_elig_date)
+
+         eligibledet = getEligibleGradeMember(dbconn,v_min_age,v_max_age,v_elig_date)
+         return render_template('grade_eligiblity_report.html', 
+                                 eligibledet = eligibledet,
+                                 gradedet=vgradedet,
+                                 loguser=memname, 
+                                 grademinage = v_min_age, 
+                                 grademaxage = v_max_age, 
+                                 gradeid = v_gradeid,
+                                 eligibledate=v_elig_date)
+
+
+
+
+
+
+
 
 def memberAction():
    print(request.method)
