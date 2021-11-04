@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome - {{ loguser }}</title>
+
+    <!-- Bootstrap -->
+     <link href="{{ url_for('static',filename='css/bootstrap-4.4.1.css') }}" rel="stylesheet">
+	 
+	 <link href="css/bootstrap-4.4.1.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+       <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto nav-dropdown" data-app-modern-menu="true">
+			  <li class="nav-item">
+                <a class="nav-link" href="javascript:{}" onclick="home()">Home</a>
+             </li>
+             <li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Members</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				  <a class="dropdown-item" href="javascript:{}" onclick="member('insert')">Add New Member</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="member('update')">Update Member</a>
+				  <div class="dropdown-divider"></div>
+				  <a class="dropdown-item" href="javascript:{}" onclick="member('list')">List of Active Members</a>
+				</div>
+          </li>
+			  
+		  <li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Teams</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				  <a class="dropdown-item" href="javascript:{}" onclick="team('insert')">Create New Team</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="team('update')">Update Team</a>
+				  <div class="dropdown-divider"></div>
+				  <a class="dropdown-item" href="javascript:{}" onclick="team('list')">View Teams</a>
+
+				</div>
+          </li>
+			  
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Fixtures</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				  <a class="dropdown-item" href="javascript:{}" onclick="fixture('insert')">New Fixture</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="fixture('update')">Update Fixture</a>
+				  <div class="dropdown-divider"></div>
+				  <a class="dropdown-item" href="javascript:{}" onclick="fixture('list')">View Fixture</a>
+
+				</div>
+          </li>
+			  
+		<li class="nav-item dropdown active">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Club News</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				  <a class="dropdown-item" href="javascript:{}" onclick="clubnews('insert')">Create Club News</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="clubnews('update')">Update Club News</a>
+					<div class="dropdown-divider"></div>
+				  <a class="dropdown-item" href="javascript:{}" onclick="clubnews('list')">View club News</a>
+				</div>
+          </li>
+		 
+			  
+		 
+			<li class="nav-item">
+            	<a class="nav-link" href="javascript:{}" onclick="grade_eligibility()">Grade Eligibility</a>
+            </li>
+			  <li class="nav-item">
+                <a class="nav-link" href="/">Logout <span class="sr-only">(current)</span></a>
+             </li>
+          </ul>
+       </div>
+    </nav>
+
+    <div class="jumbotron jumbotron-fluid text-center">
+       
+       <p class="lead">
+      <p>Member Name:&nbsp; <span class="text-primary">{{ loguser }}</span></p>
+	  	<p>Member ID:&nbsp; {{ memberid }}</p>
+		<p>Member Type:&nbsp; <span class="alert-success">Admin Member</span></p>
+      <hr class="my-4">
+	  <h1 class="display-4"> Teams Details</h1>
+		
+	  <!--<form action="/adminuser" id="adminuserform" name="adminuserform" method="POST"> -->
+		
+  </div>
+	
+
+
+    
+		
+	      <div class="form-group">
+			  <form class="col-xl-5 offset-xl-3" action="/adminuser" id="MAINFORM" name="MAINFORM" method="POST">
+		
+		<input type="hidden" name="memberid" id="memberid" value="{{ memberid }}">
+		<input type="hidden" name="memname" id="memname" value="{{ loguser }}">
+		<input type="hidden" name="pagename" id="pagename">
+		<input type="hidden" name="vclubid" id="vclubid" value="{{ vclubid }}">
+		<input type="hidden" name="vteamid" id="vteamid" value="{{ vteamid }}">
+		<input type="hidden" name="vgradeid" id="vgradeid" value="{{ vgradeid }}">
+		<input type="hidden" name="action" id="action" value="{{ action }}">
+	        <label for="txtnewsid">News ID<span class="text-danger">*</span></label>
+			  <table>
+				  <tr><td>
+	        <input type="number" class="form-control" id="txtnewsid" name="txtnewsid" placeholder="News Id" value="{{ txtnewsid }}" ></td><td><input type="button" class="form-control btn-outline-dark" name="fetchnews" value="..." onClick="getClubNews()"></td>
+				</tr>
+			</table>
+			  <br>
+			<label for="drpclubname">Club<span class="text-danger">*</span></label>
+	        <select class="form-control" name="drpclubname" id="drpclubname">
+					<option SELECTED value='0'>Select club</option>
+					{% for clubid,clubname in clubsdet.items() %}
+					  <option value= '{{ clubid }}'>{{clubname}}</option>
+					{% endfor %}
+			</select>
+			  <div name="divclubid" id="divclubid" class="text-danger" style="display:none">Club is mandatory</div>
+				  
+			<br>
+			<label for="txtnewsheader">News Header<span class="text-danger">*</span></label>
+	        <input type="text" class="form-control" id="txtnewsheader" name="txtnewsheader" placeholder="News Header" maxlength="100" value="{{ txtnewsheader }}" >
+			  <div name="divnewsname" id="divnewsheader" class="text-danger" style="display:none">News header is mandatory</div>
+				  
+			<br>
+				  
+			<label for="dtnewsdate">News Date<span class="text-danger">*</span></label>
+	        <input type="date" class="form-control" id="dtnewsdate" name="dtnewsdate" placeholder="News Date" value="{{ dtnewsdate }}" >
+			  <div name="divnewsdate" id="divnewsdate" class="text-danger" style="display:none">News date is mandatory</div>
+				  
+			<br>
+			
+			<label for="txtnews">News<span class="text-danger">*</span></label>
+			<textarea class="form-control" id="txtnews" name="txtnews" placeholder="News">{{ txtnews }}</textarea>
+	        
+			  <div name="divnews" id="divnews" class="text-danger" style="display:none">News is mandatory</div>
+				  
+			<br>
+			<label for="txtnewsbyline">News Written By<span class="text-danger">*</span></label>
+	        <input type="text" class="form-control" id="txtnewsbyline" name="txtnewsbyline" placeholder="News by" value="{{ txtnewsbyline }}" >
+			  <div name="divnewsbyline" id="divnewsbyline" class="text-danger" style="display:none">News by is mandatory</div>
+				  
+			<br>  
+			<br><br>
+			<button type="submit" class="btn btn-primary col-xl-5 offset-xl-3" name="btnsubmit" onClick="return saveNewsDetail()">Save</button>
+				  </form>
+		</div>
+
+	      
+  
+	  
+	  
+  <script language="javascript">
+		if(document.MAINFORM.action.value == "INSERT"){
+		   	document.MAINFORM.txtnewsid.disabled = true;
+			document.MAINFORM.fetchnews.disabled = true;
+		   }
+		else if(document.MAINFORM.action.value == "UPDATE"){
+			document.MAINFORM.txtnewsid.disabled = false;
+			document.MAINFORM.fetchnews.disabled = false;
+		}
+	  
+	  document.MAINFORM.drpclubname.value = document.MAINFORM.vclubid.value;
+	  
+ 
+	  function getClubNews(){
+		  vnewsid = document.MAINFORM.txtnewsid.value;
+		  if(vnewsid==""){
+			  alert("News id is mandatory");
+			  document.MAINFORM.txtnewsid.focus();
+		  }
+		  else {
+			document.MAINFORM.pagename.value = "newsadmin";
+			document.MAINFORM.action.value = "fetch_news_details";
+			document.getElementById('MAINFORM').submit();
+		  }
+	  }
+	  
+	  function getTeamDetail(){
+		  vmemid = document.MAINFORM.txtteamid.value;
+		  if(vmemid==""){
+			  alert("Teamr id is mandatory");
+			  document.MAINFORM.txtteamid.focus();
+		  }
+		  else {
+			document.MAINFORM.pagename.value = "teamadmin";
+			document.MAINFORM.action.value = "fetch_team_details";
+			document.getElementById('MAINFORM').submit();
+		  }
+	  }
+	  
+	  function saveNewsDetail(){
+		  /* alert("point 1");
+		  if(document.MAINFORM.drpclubname.value == "0") {
+			  document.getElementById("divclubid").style.display = "block";
+			  return false;
+		  }
+		  
+		  else if(document.MAINFORM.txtnewsheader.value == "") {
+			  document.getElementById("divteamname").style.display = "block";
+			  return false;
+		  }
+		  else if(document.MAINFORM.divnewsdate.value == "") {
+			  document.getElementById("divnewsdate").style.display = "block";
+			  return false;
+		  }
+		  
+		  else if(document.MAINFORM.txtnews.value == "") {
+			  document.getElementById("divnews").style.display = "block";
+			  return false;
+		  }
+		 
+		  else if(document.MAINFORM.txtnewsbyline.value == "") {
+			  document.getElementById("divnewsbyline").style.display = "block";
+			  return false;
+		  }*/
+		  
+		  
+		  alert("just before saving");
+		  document.MAINFORM.pagename.value = "newsadmin";
+		  document.MAINFORM.action.value = "save_news_detail";
+		  document.MAINFORM.txtnewsid.disabled = false;
+		  alert("working");
+		  return true;
+	  }
+		
+	</script>	  
+	  
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
+    <script src="js/jquery-3.4.1.min.js"></script>
+	<script src="{{ url_for('static',filename='js/jquery-3.4.1.min.js') }}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed --> 
+    <script src="js/popper.min.js"></script>
+	<script src="{{ url_for('static',filename='js/popper.min.js') }}"></script>
+    <script src="js/bootstrap-4.4.1.js"></script>
+	<script src="{{ url_for('static',filename='js/bootstrap-4.4.1.js') }}"></script>
+
+<script language="javascript">
+		function member(p_mode){
+			if(p_mode == "insert"){
+				document.getElementById("pagename").value = "member_insert";
+				document.getElementById('MAINFORM').submit();
+				
+			}
+			else if(p_mode == 'update'){
+				document.getElementById("pagename").value = "member_update";
+				document.getElementById('MAINFORM').submit();
+			}
+			else if(p_mode == 'list'){
+				document.getElementById("pagename").value = "member_list";
+				document.getElementById('MAINFORM').submit();
+			}
+		}
+																		 
+																		 
+		function team(p_mode){
+					if(p_mode == "insert"){
+						document.getElementById("pagename").value = "team_insert";
+						document.getElementById('MAINFORM').submit();
+
+					}
+					else if(p_mode == 'update'){
+						document.getElementById("pagename").value = "team_update";
+						document.getElementById('MAINFORM').submit();
+					}
+					else if(p_mode == 'list'){
+						document.getElementById("pagename").value = "team_list";
+						document.getElementById('MAINFORM').submit();
+					}
+				}
+		
+		function fixture(p_mode){
+					if(p_mode == "insert"){
+						document.getElementById("pagename").value = "fixture_inert";
+						document.getElementById('MAINFORM').submit();
+
+					}
+					else if(p_mode == 'update'){
+						document.getElementById("pagename").value = "fixture_update";
+						document.getElementById('MAINFORM').submit();
+					}
+					else if(p_mode == 'list'){
+						document.getElementById("pagename").value = "fixture_list";
+						document.getElementById('MAINFORM').submit();
+					}
+				}
+		
+		function clubnews(p_mode){
+					if(p_mode == "insert"){
+						document.getElementById("pagename").value = "clubnews_inert";
+						document.getElementById('MAINFORM').submit();
+
+					}
+					else if(p_mode == 'update'){
+						document.getElementById("pagename").value = "clubnews_update";
+						document.getElementById('MAINFORM').submit();
+					}
+					else if(p_mode == 'list'){
+						document.getElementById("pagename").value = "clubnews_list";
+						document.getElementById('MAINFORM').submit();
+					}
+				}
+		
+		
+		function grade_eligibility(){
+			document.getElementById("pagename").value = "grade_elig_report";
+			document.getElementById("action").value = "load_page";
+			document.getElementById('MAINFORM').submit();
+		}
+		
+		function home(){
+			document.getElementById("pagename").value = "adminhomepage";
+			document.getElementById("action").value = "go_home";
+			document.getElementById('MAINFORM').submit();
+		}
+		
+	</script>
+	
+  </body>
+</html>
