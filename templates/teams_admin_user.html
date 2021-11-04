@@ -17,35 +17,55 @@
 
        <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto nav-dropdown" data-app-modern-menu="true">
-			  <li class="nav-item active">
-                <a class="nav-link" href="#">Home</a>
+			  <li class="nav-item">
+                <a class="nav-link" href="javascript:{}" onclick="home()">Home</a>
              </li>
              <li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Members</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				  <a class="dropdown-item" href="#">Add New Member</a>
-				  <a class="dropdown-item" href="#">Update Member</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="member('insert')">Add New Member</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="member('update')">Update Member</a>
 				  <div class="dropdown-divider"></div>
-				  <a class="dropdown-item" href="#">List of Active Members</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="member('list')">List of Active Members</a>
 				</div>
           </li>
 			  
-		  <li class="nav-item dropdown">
+		  <li class="nav-item dropdown active">
 				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Teams</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				  <a class="dropdown-item" href="#">Create New Team</a>
-				  <a class="dropdown-item" href="#">Update Team</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="team('insert')">Create New Team</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="team('update')">Update Team</a>
 				  <div class="dropdown-divider"></div>
-				  <a class="dropdown-item" href="#">View Teams</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="team('list')">View Teams</a>
 
 				</div>
           </li>
 			  
-		  
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Fixtures</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				  <a class="dropdown-item" href="javascript:{}" onclick="fixture('insert')">New Fixture</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="fixture('update')">Update Fixture</a>
+				  <div class="dropdown-divider"></div>
+				  <a class="dropdown-item" href="javascript:{}" onclick="fixture('list')">View Fixture</a>
+
+				</div>
+          </li>
+			  
+		<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Club News</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+				  <a class="dropdown-item" href="javascript:{}" onclick="clubnews('insert')">Create Club News</a>
+				  <a class="dropdown-item" href="javascript:{}" onclick="clubnews('update')">Update Club News</a>
+					<div class="dropdown-divider"></div>
+				  <a class="dropdown-item" href="javascript:{}" onclick="clubnews('list')">View club News</a>
+				</div>
+          </li>
+		 
 			  
 		 
 			<li class="nav-item">
-            	<a class="nav-link" href="#">Grade Eligibility</a>
+            	<a class="nav-link" href="javascript:{}" onclick="grade_eligibility()">Grade Eligibility</a>
             </li>
 			  <li class="nav-item">
                 <a class="nav-link" href="/">Logout <span class="sr-only">(current)</span></a>
@@ -177,7 +197,87 @@
 	<script src="{{ url_for('static',filename='js/popper.min.js') }}"></script>
     <script src="js/bootstrap-4.4.1.js"></script>
 	<script src="{{ url_for('static',filename='js/bootstrap-4.4.1.js') }}"></script>
-	
+	  
+	<script language="javascript">
+		function member(p_mode){
+			if(p_mode == "insert"){
+				document.getElementById("pagename").value = "member_insert";
+				document.getElementById('MAINFORM').submit();
+				
+			}
+			else if(p_mode == 'update'){
+				document.getElementById("pagename").value = "member_update";
+				document.getElementById('MAINFORM').submit();
+			}
+			else if(p_mode == 'list'){
+				document.getElementById("pagename").value = "member_list";
+				document.getElementById('MAINFORM').submit();
+			}
+		}
+																		 
+																		 
+		function team(p_mode){
+					if(p_mode == "insert"){
+						document.getElementById("pagename").value = "team_insert";
+						document.getElementById('MAINFORM').submit();
+
+					}
+					else if(p_mode == 'update'){
+						document.getElementById("pagename").value = "team_update";
+						document.getElementById('MAINFORM').submit();
+					}
+					else if(p_mode == 'list'){
+						document.getElementById("pagename").value = "team_list";
+						document.getElementById('MAINFORM').submit();
+					}
+				}
+		
+		function fixture(p_mode){
+					if(p_mode == "insert"){
+						document.getElementById("pagename").value = "fixture_inert";
+						document.getElementById('MAINFORM').submit();
+
+					}
+					else if(p_mode == 'update'){
+						document.getElementById("pagename").value = "fixture_update";
+						document.getElementById('MAINFORM').submit();
+					}
+					else if(p_mode == 'list'){
+						document.getElementById("pagename").value = "fixture_list";
+						document.getElementById('MAINFORM').submit();
+					}
+				}
+		
+		function clubnews(p_mode){
+					if(p_mode == "insert"){
+						document.getElementById("pagename").value = "clubnews_inert";
+						document.getElementById('MAINFORM').submit();
+
+					}
+					else if(p_mode == 'update'){
+						document.getElementById("pagename").value = "clubnews_update";
+						document.getElementById('MAINFORM').submit();
+					}
+					else if(p_mode == 'list'){
+						document.getElementById("pagename").value = "clubnews_list";
+						document.getElementById('MAINFORM').submit();
+					}
+				}
+		
+		
+		function grade_eligibility(){
+			document.getElementById("pagename").value = "grade_elig_report";
+			document.getElementById("action").value = "load_page";
+			document.getElementById('MAINFORM').submit();
+		}
+		
+		function home(){
+			document.getElementById("pagename").value = "adminhomepage";
+			document.getElementById("action").value = "go_home";
+			document.getElementById('MAINFORM').submit();
+		}
+		
+	</script>
 	
   </body>
 </html>

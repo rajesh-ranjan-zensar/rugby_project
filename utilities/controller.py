@@ -88,6 +88,7 @@ def getTeamFixtures(DBHandler, p_teamid):
     vSQLQuery+= "(select teamname from teams where teamid = f.awayteam) ateamname, "
     vSQLQuery+= "awayscore "
     vSQLQuery+= "from fixtures f where " + str(p_teamid) + " in (f.hometeam, f.awayteam)"
+    print(vSQLQuery)
     DBHandler.cursor.execute(vSQLQuery)
     retVal = DBHandler.cursor.fetchall()
     return retVal
@@ -323,6 +324,127 @@ def getEligibleGradeMember(DBHandler, p_min_age,p_max_age, p_elig_date):
     vSQLQuery += "DATE_FORMAT('" + str(p_elig_date) +"', '%Y') - DATE_FORMAT(birthdate, '%Y') - (DATE_FORMAT('" + str(p_elig_date) +"', '00-%m-%d') < DATE_FORMAT(birthdate, '00-%m-%d')) AS age "
     vSQLQuery += "from members m) as elgible_member "
     vSQLQuery +=  "where age between " + str(p_min_age) + " and " + str(p_max_age)
+    print(vSQLQuery)
+    DBHandler.cursor.execute(vSQLQuery)
+    retVal = DBHandler.cursor.fetchall()
+    return retVal
+
+### Get Fixture details
+def getfixtureDet(DBHandler,p_fix_id):
+    vSQLQuery = "select fixtureid, fixturedate, hometeam,awayteam, homescore,awayscore from fixtures where fixtureid=" + str(p_fix_id)
+    print(vSQLQuery)
+    DBHandler.cursor.execute(vSQLQuery)
+    retVal = DBHandler.cursor.fetchone()
+    return retVal
+
+## Save fixture details
+def saveFixtureDetails(DBHandler,
+                    p_fixid,
+                    p_fixdate,
+                    p_hometeam,
+                    p_awayteam,
+                    p_homescore,
+                    p_awayscore
+                    ):
+    vSQLQuery = "select count(1) from fixtures where fixtureid="+str(p_fixid)
+    print(vSQLQuery)
+    DBHandler.cursor.execute(vSQLQuery)
+    for v_rec in DBHandler.cursor:
+            v_cnt = v_rec[0]
+    print(v_rec[0])
+    v_cnt = v_rec[0]
+    print("Total recoreds found: ",v_cnt)
+    
+
+    v_hometeam = p_hometeam
+    v_awayteam = p_awayteam
+    v_homescore = p_homescore
+    v_awayscore = p_awayscore
+    if v_hometeam == "0":
+        v_hometeam = "null"
+    if v_awayteam == "0":
+        v_awayteam = "null"
+
+    if v_homescore == "":
+        v_homescore = "0"
+    if v_awayscore == "":
+        v_awayscore = "0"
+    if v_cnt == 0:
+        vSQLQuery = "INSERT INTO fixtures VALUES ("
+        vSQLQuery += str(p_fixid) + ",'" + str(p_fixdate) + "'," + str(v_hometeam) + "," + str(v_awayteam) + ","  + str(v_homescore) + "," + str(v_awayscore) + ")"
+        print(vSQLQuery)
+        DBHandler.cursor.execute(vSQLQuery)
+        DBHandler.DBcon.commit()
+        print(DBHandler.cursor.rowcount, "record(s) affected")
+    elif v_cnt > 0:
+        vSQLQuery = "UPDATE fixtures SET "
+        vSQLQuery += "fixtureid='"+ str(p_fixid) +"', "
+        vSQLQuery += "fixturedate='"+ str(p_fixdate) +"', "
+        vSQLQuery += "hometeam='"+ str(p_hometeam) + "', "
+        vSQLQuery += "awayteam='"+ str(p_awayteam) + "', "
+        vSQLQuery += "homescore='"+ str(v_homescore) + "', "
+        vSQLQuery += "awayscore='"+ str(v_awayscore) + "' where fixtureid=" + str(p_fixid)
+        print(vSQLQuery)
+        DBHandler.cursor.execute(vSQLQuery)
+        DBHandler.DBcon.commit()
+        print(DBHandler.cursor.rowcount, "record(s) affected")
+
+
+### Get News details
+def getNewsDet(DBHandler,p_news_id):
+    vSQLQuery = "select newsid, clubid,newsheader, newsdate,news,newsbyline from clubnews where newsid = " + str(p_news_id)
+    print(vSQLQuery)
+    DBHandler.cursor.execute(vSQLQuery)
+    retVal = DBHandler.cursor.fetchone()
+    return retVal
+
+## Save News details
+def saveNewsDetails(DBHandler,
+                    p_newsid,
+                    p_clubid,
+                    p_newsheader,
+                    p_newsdate,
+                    p_news,
+                    p_newsbyline
+                    ):
+    vSQLQuery = "select count(1) from clubnews where newsid="+str(p_newsid)
+    print(vSQLQuery)
+    DBHandler.cursor.execute(vSQLQuery)
+    for v_rec in DBHandler.cursor:
+            v_cnt = v_rec[0]
+    print(v_rec[0])
+    v_cnt = v_rec[0]
+    print("Total recoreds found: ",v_cnt)
+    
+
+    v_clubid = p_clubid
+
+    if v_clubid == "0":
+        v_clubid = "null"
+    
+    if v_cnt == 0:
+        vSQLQuery = "INSERT INTO clubnews VALUES ("
+        vSQLQuery += str(p_newsid) + "," + str(p_clubid) + ',"' + str(p_newsheader) + '","' + str(p_newsbyline) + '","'  + str(p_newsdate) + '","' + str(p_news.strip()) + '")'
+        print(vSQLQuery)
+        DBHandler.cursor.execute(vSQLQuery)
+        DBHandler.DBcon.commit()
+        print(DBHandler.cursor.rowcount, "record(s) affected")
+    elif v_cnt > 0:
+        vSQLQuery = "UPDATE clubnews SET "
+        vSQLQuery += "NewsID='"+ str(p_newsid) +"', "
+        vSQLQuery += "ClubID='"+ str(p_clubid) +"', "
+        vSQLQuery += 'NewsHeader="'+ str(p_newsheader) + '", '
+        vSQLQuery += "NewsByline='"+ str(p_newsbyline) + "', "
+        vSQLQuery += "NewsDate='"+ str(p_newsdate) + "', "
+        vSQLQuery += 'News="'+ str(p_news) + '" where newsid=' + str(p_newsid)
+        print(vSQLQuery)
+        DBHandler.cursor.execute(vSQLQuery)
+        DBHandler.DBcon.commit()
+        print(DBHandler.cursor.rowcount, "record(s) affected")
+
+## Get all club news as per selected club in admin mode
+def getAdminClubNews(DBHandler, p_clubid):
+    vSQLQuery = "select c.newsheader, c.news, c.newsdate, c.newsbyline from clubnews c where clubid =" + str(p_clubid)
     print(vSQLQuery)
     DBHandler.cursor.execute(vSQLQuery)
     retVal = DBHandler.cursor.fetchall()

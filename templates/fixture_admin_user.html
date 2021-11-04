@@ -20,7 +20,7 @@
 			  <li class="nav-item">
                 <a class="nav-link" href="javascript:{}" onclick="home()">Home</a>
              </li>
-             <li class="nav-item dropdown active">
+             <li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Members</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				  <a class="dropdown-item" href="javascript:{}" onclick="member('insert')">Add New Member</a>
@@ -41,7 +41,7 @@
 				</div>
           </li>
 			  
-			<li class="nav-item dropdown">
+			<li class="nav-item dropdown active">
 				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Fixtures</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				  <a class="dropdown-item" href="javascript:{}" onclick="fixture('insert')">New Fixture</a>
@@ -74,7 +74,6 @@
        </div>
     </nav>
 
-
     <div class="jumbotron jumbotron-fluid text-center">
        
        <p class="lead">
@@ -82,7 +81,7 @@
 	  	<p>Member ID:&nbsp; {{ memberid }}</p>
 		<p>Member Type:&nbsp; <span class="alert-success">Admin Member</span></p>
       <hr class="my-4">
-	  <h1 class="display-4"> Member Details</h1>
+	  <h1 class="display-4"> Team Fixtures</h1>
 		
 	  <!--<form action="/adminuser" id="adminuserform" name="adminuserform" method="POST"> -->
 		
@@ -98,91 +97,54 @@
 		<input type="hidden" name="memberid" id="memberid" value="{{ memberid }}">
 		<input type="hidden" name="memname" id="memname" value="{{ loguser }}">
 		<input type="hidden" name="pagename" id="pagename">
+		<input type="hidden" name="vhometeamid" id="vhometeamid" value="{{ vhometeamid }}">
+		<input type="hidden" name="vawayteamid" id="vawayteamid" value="{{ vawayteamid }}">
+
 		<input type="hidden" name="action" id="action" value="{{ action }}">
-		<input type="hidden" name="vclubid" id="vclubid" value="{{ vclubid }}">
-		<input type="hidden" name="vteamid" id="vteamid" value="{{ vteamid }}">
-	    <input type="hidden" name="vmemstatus" id="vmemstatus" value="{{ vmemstatus }}">
-	    <input type="hidden" name="vadmin" id="vadmin" value="{{ vadmin }}">
-		<input type="hidden" name="dbaction" id="dbaction" value="{{ dbaction }}">
-	        <label for="textmemberid">Member ID</label>
+	        <label for="txtfixtureid">Fixture ID<span class="text-danger">*</span></label>
 			  <table>
 				  <tr><td>
-	        <input type="number" class="form-control" id="intmemberid" name="intmemberid" placeholder="Member ID" value="{{ memberid }}" ></td><td><input type="button" class="form-control btn-outline-dark" name="fetchmember" value="..." onClick="getMemberDetail()"></td>
+	        <input type="number" class="form-control" id="txtfixtureid" name="txtfixtureid" placeholder="Fixture Id" value="{{ txtfixtureid }}" ></td><td><input type="button" class="form-control btn-outline-dark" name="fetchfixture" value="..." onClick="getFixtureDetail()">
+			</td>
 				</tr>
 			</table>
 			  <br>
-	        <!-- <small id="emailHelp1" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
 			
-			<label for="textfirstname">Member First Name<span class="text-danger">*</span></label>
-	        <input type="text" class="form-control" id="textfirstname" name="textfirstname" placeholder="Member First Name" maxlength="50" value="{{ fname }}" >
-			  <div name="divfname" id="divfname" class="text-danger" style="display:none">Member First name is mandatory</div>
+			<label for="dtfixturedate">fixture Date<span class="text-danger">*</span></label>
+				  <input type="hidden" name="fixdate_hidden" id="fixdate_hidden" value="{{dtfixturedate}}">
+	        <input type="datetime-local" class="form-control" id="dtfixturedate" name="dtfixturedate" placeholder="fixture Date">
+			  <div name="divfixturedate" id="divfixturedate" class="text-danger" style="display:none">Date is mandatory</div>
 				  
 			<br>
 				  
-			<label for="textlastname">Member Last Name<span class="text-danger">*</span></label>
-	        <input type="text" class="form-control" id="textlastname" name="textlastname" placeholder="Member Last Name" maxlength="50" value="{{ lastname }}">
-			<div name="divlname" id="divlname" class="text-danger" style="display:none">Member Last name is mandatory</div>
-				 
-			<br>
-			<label for="drpclubname">Club<span class="text-danger">*</span></label>
-	        <select class="form-control" name="drpclubname" id="drpclubname">
-					<option SELECTED value='0'>Select club</option>
-					{% for clubid,clubname in clubsdet.items() %}
-					  <option value= '{{ clubid }}'>{{clubname}}</option>
-					{% endfor %}
-			</select>
-			  <div name="divclubid" id="divclubid" class="text-danger" style="display:none">Club is mandatory</div>
-				  
-			<br>
-			<label for="drpteamname">Team</label>
-	        <select class="form-control" name="drpteamname" id="drpteamname">
-					<option SELECTED value='0'>No Team Assigned</option>
-					{% for teamid, teamname in teamsdet.items() %}
+			<label for="drpteamnameh">Home Team<span class="text-danger">*</span></label>
+	        <select class="form-control" name="drpteamnameh" onChange="validateTeams('home')" id="drpteamnameh">
+					<option SELECTED value='0'>Select team</option>
+					{% for teamid,teamname in teamsdet.items() %}
 					  <option value= '{{ teamid }}'>{{teamname}}</option>
 					{% endfor %}
 			</select>
-			  <br>
-			<label for="textadd1">Address Line 1</label>
-	        <input type="text" class="form-control" id="textadd1" name="textadd1" maxlength="50" value="{{ address1 }}">
-			<br>
-			<label for="textadd2">Address Line 2</label>
-	        <input type="text" class="form-control" id="textadd2" name="textadd2" maxlength="50" value="{{ address2 }}">
-			<br>
-			<label for="textcity">City<span class="text-danger">*</span></label>
-	        <input type="text" class="form-control" id="textcity" name="textcity" maxlength="30" placeholder="City" value="{{ cityname }}">
-			<div name="divcity" id="divcity" class="text-danger" style="display:none">City is mandatory</div> 
-			
-			<br>
-			<label for="textemail">Email<span class="text-danger">*</span></label>
-	        <input type="email" class="form-control" id="textemail" name="textemail" maxlength="320" placeholder="Email" value="{{ emailid }}">
-			<div name="divemail" id="divemail" class="text-danger" style="display:none">Email is mandatory</div>  
-			
-			<br>
-			<label for="textephone">Phone</label>
-	        <input type="tel" class="form-control" id="textephone" name="textephone" maxlength="10" placeholder="10 digit phone" value="{{ phonenumber }}">
-			  
-			<br>
-			<label for="textdob">Date of Birth<span class="text-danger">*</span></label>
-	        <input type=date class="form-control" id="textdob" name="textdob" value="{{ dateofbirth }}">
-			<div name="divdob" id="divdob" class="text-danger" style="display:none">Birth Date is mandatory</div>  
+			  <div name="divhometeamid" id="divhometeamid" class="text-danger" style="display:none">Home team is mandatory</div>
 				  
 			<br>
-			<label for="drpstatus">Membership Status<span class="text-danger">*</span></label>
-	        <select class="form-control" name="drpstatus" id="drpstatus">
-					<option SELECTED value='1' {{ activesel }}>Active</option>
-					<option SELECTED value='0' {{ inactivesel }}>Inactive</option>
+			<label for="drpteamnamea">Away Team<span class="text-danger">*</span></label>
+	        <select class="form-control" name="drpteamnamea" onChange="validateTeams('away')" id="drpteamnamea">
+					<option SELECTED value='0'>Select team</option>
+					{% for teamid,teamname in teamsdet.items() %}
+					  <option value= '{{ teamid }}'>{{teamname}}</option>
+					{% endfor %}
 			</select>
-			<div name="divstatus" id="divstatus" class="text-danger" style="display:none">Membership status is mandatory</div>  
-			
+				  
+			  <div name="divawayteamid" id="divawayteamid" class="text-danger" style="display:none">Away team is mandatory</div>
 			<br>
-			<label for="drpaccess">Admin Acess<span class="text-danger">*</span></label>
-	        <select class="form-control" name="drpaccess" id="drpaccess">
-					<option SELECTED value='1' {{ adminsel }}>Admin Member</option>
-					<option SELECTED value='0' {{ stdsel }}>Standard Member</option>
-			</select>
-				  <div name="divaccess" id="divaccess" class="text-danger" style="display:none">Admin access is mandatory</div>
+		<label for="txthomescore">Home Team Score<span class="text-danger">*</span></label>
+		<input type="number" class="form-control" id="txthomescore" name="txthomescore" placeholder="Home Score" value="{{ txthomescore }}" >
+				  
+		<br>
+		<label for="txtawayscore">Away Team Score<span class="text-danger">*</span></label>
+		<input type="number" class="form-control" id="txtawayscore" name="txtawayscore" placeholder="Home Score" value="{{ txtawayscore }}" >
 			<br><br>
-			<button type="submit" class="btn btn-primary col-xl-5 offset-xl-3" name="btnsubmit" onClick="return saveMemberDetail()">Save</button>
+			<button type="submit" class="btn btn-primary col-xl-5 offset-xl-3" name="btnsubmit" onClick="return saveFixtureDetail()">Save</button>
 				  </form>
 		</div>
 
@@ -191,70 +153,72 @@
 	  
 	  
   <script language="javascript">
-		if(document.MAINFORM.dbaction.value == "INSERT"){
-		   	document.MAINFORM.intmemberid.disabled = true;
-			document.MAINFORM.fetchmember.disabled = true;
+		if(document.MAINFORM.action.value == "INSERT"){
+		   	document.MAINFORM.txtfixtureid.disabled = true;
+			document.MAINFORM.fetchfixture.disabled = true;
 		   }
-		else if(document.MAINFORM.dbaction.value == "UPDATE"){
-			document.MAINFORM.intmemberid.disabled = false;
-			document.MAINFORM.fetchmember.disabled = false;
+		else if(document.MAINFORM.action.value == "UPDATE"){
+			document.MAINFORM.txtfixtureid.disabled = false;
+			document.MAINFORM.fetchfixture.disabled = false;
 		}
 	  
-	  document.MAINFORM.drpclubname.value = document.MAINFORM.vclubid.value;
-	  document.MAINFORM.drpteamname.value = document.MAINFORM.vteamid.value;
-	  document.MAINFORM.drpstatus.value = document.MAINFORM.vmemstatus.value;
-	  document.MAINFORM.drpaccess.value = document.MAINFORM.vadmin.value;
-	  
+	  document.MAINFORM.drpteamnameh.value = document.MAINFORM.vhometeamid.value;
+	  document.MAINFORM.drpteamnamea.value = document.MAINFORM.vawayteamid.value;
+	  dateval = document.MAINFORM.fixdate_hidden.value;
+	  strDate = dateval.toString();
+	  document.MAINFORM.dtfixturedate.value=strDate.replace(" ","T");
+
+
+//****************
  
-	  function getMemberDetail(){
-		  vmemid = document.MAINFORM.intmemberid.value;
-		  if(vmemid==""){
-			  alert("member id is mandatory");
-			  document.MAINFORM.intmemberid.focus();
+	  function getFixtureDetail(){
+		  vfixid = document.MAINFORM.txtfixtureid.value;
+		  if(vfixid==""){
+			  alert("Fixture id is mandatory");
+			  document.MAINFORM.txtfixtureid.focus();
 		  }
 		  else {
-			document.MAINFORM.pagename.value = "admingetmemberdetail";
+			document.MAINFORM.pagename.value = "fixtureadmin";
+			document.MAINFORM.action.value = "fetch_fixture_details";
 			document.getElementById('MAINFORM').submit();
 		  }
 	  }
-	  function saveMemberDetail(){
-		  if(document.MAINFORM.drpclubname.value == "0") {
-			  document.getElementById("divclubid").style.display = "block";
+	  
+	  function validateTeams(strTeam){
+		  v_hometeam = document.MAINFORM.drpteamnameh.value;
+		  v_awayteam = document.MAINFORM.drpteamnamea.value;
+		  if(v_hometeam == v_awayteam){
+			  if(strTeam == "home"){
+				  document.MAINFORM.drpteamnamea.value = "0";
+			  }
+			  else if(strTeam == "away"){
+				 document.MAINFORM.drpteamnameh.value = "0"; 
+			  }
+			  else {
+				  document.MAINFORM.drpteamnamea.value = "0";
+			  }
+		  }
+	  }
+	  
+	  function saveFixtureDetail(){
+		  if(document.MAINFORM.dtfixturedate.value == "") {
+			  document.getElementById("divfixturedate").style.display = "block";
 			  return false;
 		  }
-		  else if(document.MAINFORM.textfirstname.value == "") {
-			  document.getElementById("divfname").style.display = "block";
+		  else if(document.MAINFORM.drpteamnameh.value == "0") {
+			  document.getElementById("divhometeamid").style.display = "block";
 			  return false;
 		  }
-		  
-		  else if(document.MAINFORM.textlastname.value == "") {
-			  document.getElementById("divlname").style.display = "block";
-			  return false;
-		  }
-		  else if(document.MAINFORM.textcity.value == "") {
-			  document.getElementById("divcity").style.display = "block";
-			  return false;
-		  }
-		  else if(document.MAINFORM.textemail.value == "") {
-			  document.getElementById("divemail").style.display = "block";
-			  return false;
-		  }
-		  else if(document.MAINFORM.textdob.value == "") {
-			  document.getElementById("divdob").style.display = "block";
-			  return false;
-		  }
-		  else if(document.MAINFORM.drpstatus.value == "") {
-			  document.getElementById("divstatus").style.display = "block";
-			  return false;
-		  }
-		  else if(document.MAINFORM.drpaccess.value == "") {
-			  document.getElementById("divaccess").style.display = "block";
+		  else if(document.MAINFORM.drpteamnamea.value == "0") {
+			  document.getElementById("divawayteamid").style.display = "block";
 			  return false;
 		  }
 		  
 		  
-		  document.MAINFORM.pagename.value = "saveMemberDetail";
-		  document.MAINFORM.intmemberid.disabled = false;
+		  
+		  document.MAINFORM.pagename.value = "fixtureadmin";
+		  document.MAINFORM.action.value = "savefixturedetail";
+		  document.MAINFORM.txtfixtureid.disabled = false;
 		  return true;
 	  }
 		
@@ -269,7 +233,7 @@
     <script src="js/bootstrap-4.4.1.js"></script>
 	<script src="{{ url_for('static',filename='js/bootstrap-4.4.1.js') }}"></script>
 	
-	<script language="javascript">
+<script language="javascript">
 		function member(p_mode){
 			if(p_mode == "insert"){
 				document.getElementById("pagename").value = "member_insert";
@@ -349,5 +313,6 @@
 		}
 		
 	</script>
+	
   </body>
 </html>
