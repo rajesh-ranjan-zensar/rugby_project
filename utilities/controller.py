@@ -103,12 +103,17 @@ def getNextID(DBHandler, p_tablename, p_fieldname_pk):
     return retVal
 
 ## Get the club details. if club id is given, will give one club with id, else will return all the clubs
-def getClubDetails(DBHandler, p_club_id=0):
+def getClubDetails(DBHandler, p_club_id=0, p_tablename = "CLUBS"):
     retVal ={}
-    if p_club_id == 0: 
-        vSQLQuery = "select clubid,clubname from clubs"
-    else:
-        vSQLQuery = "select clubid,clubname from clubs where clubid="+str(p_club_id)
+
+    if p_club_id == 0 and p_tablename == "CLUBS": 
+        vSQLQuery = "select clubid,clubname from " + p_tablename
+    elif p_club_id == 0 and p_tablename == "TEAMS":
+        vSQLQuery = "select distinct t.clubid,clubname from teams t, clubs c where t.clubid = c.clubid"
+    elif p_club_id != 0 and p_tablename == "CLUBS":
+        vSQLQuery = "select clubid,clubname from " + p_tablename  +" where clubid="+str(p_club_id)
+    elif p_club_id != 0 and p_tablename == "TEAMS":
+        vSQLQuery = "select distinct t.clubid,clubname from teams t, clubs c where t.clubid = c.clubid and clubid="+str(p_club_id)
     try:
         print(vSQLQuery)
         DBHandler.cursor.execute(vSQLQuery)
@@ -121,12 +126,16 @@ def getClubDetails(DBHandler, p_club_id=0):
         return v_err
 
 ## Get the team names. if team id is given, will return that team name, else give all the teams
-def getTeamsDetails(DBHandler, p_team_id=0):
+def getTeamsDetails(DBHandler, p_team_id=0, p_clubid = 0):
     retVal={}
-    if p_team_id == 0: 
+    if p_team_id == 0 and p_clubid == 0: 
         vSQLQuery = "select teamid,teamname from teams"
-    else:
-        vSQLQuery = "select teamid,teamname from teams where teamid="+str(p_team_id)
+    elif p_team_id == 0 and p_clubid != 0:
+        vSQLQuery = "select teamid,teamname from teams where clubid = " + str(p_clubid)
+    elif p_team_id != 0 and p_clubid == 0:
+        vSQLQuery = "select teamid,teamname from teams where teamid = "+str(p_team_id)
+    elif p_team_id != 0 and p_clubid != 0:
+        vSQLQuery = "select teamid,teamname from teams where teamid = "+str(p_team_id) + " and clubid = " + str(p_clubid)
     try:
         print(vSQLQuery)
         DBHandler.cursor.execute(vSQLQuery)

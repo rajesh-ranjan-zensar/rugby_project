@@ -125,7 +125,7 @@
 				 
 			<br>
 			<label for="drpclubname">Club<span class="text-danger">*</span></label>
-	        <select class="form-control" name="drpclubname" id="drpclubname">
+	        <select class="form-control" name="drpclubname" id="drpclubname" onChange="getTeams()">
 					<option SELECTED value='0'>Select club</option>
 					{% for clubid,clubname in clubsdet.items() %}
 					  <option value= '{{ clubid }}'>{{clubname}}</option>
@@ -256,6 +256,12 @@
 		  document.MAINFORM.pagename.value = "saveMemberDetail";
 		  document.MAINFORM.intmemberid.disabled = false;
 		  return true;
+	  }
+	  function getTeams(){
+		  vclubid = document.MAINFORM.drpclubname.value;
+		  document.MAINFORM.pagename.value = "memberadmin";
+		  document.MAINFORM.action.value = "getteamname";
+		  document.getElementById('MAINFORM').submit();
 	  }
 		
 	</script>	  
