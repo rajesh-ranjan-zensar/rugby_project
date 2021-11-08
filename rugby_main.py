@@ -80,7 +80,7 @@ def clubnews_request():
          else:
             fixdet = getTeamFixtures(dbconn, v_teamid)
             print(fixdet)
-         return render_template('fixture_stuser.html', fixturedet = fixdet, errormsg=v_error, loguser=memdet[3] + " " +memdet[3], memberid=memdet[0])
+         return render_template('fixture_stuser.html', fixturedet = fixdet, errormsg=v_error, loguser=memdet[3] + " " +memdet[4], memberid=memdet[0])
 
 @app.route('/savestuserprofile',methods = ['POST', 'GET'])
 def save_user_profile():
@@ -141,14 +141,55 @@ def menu_navigate():
       vclubdet = getClubDetails(dbconn)
       vteamdet = getTeamsDetails(dbconn)
       vgradedet = getGradeDetails(dbconn)
+      if pagename == "adminhomepage" and action == "go_home":
+         return render_template('admin_user.html',loguser=memname, memberid=memberid)
       if pagename == "member_insert":
+         vclubdet = getClubDetails(dbconn,0,"TEAMS")
          vnextmember = getNextID(dbconn,"members","memberid")
          print("Next memberid: ",vnextmember)
          return render_template('member_admin_user.html', dbaction="INSERT",clubsdet=vclubdet,teamsdet=vteamdet,loguser=memname,vclubid=0,vteamid=0,memberid=vnextmember)
       if pagename == "member_update":
+         vclubdet = getClubDetails(dbconn,0,"TEAMS")
          return render_template('member_admin_user.html', dbaction="UPDATE",clubsdet=vclubdet,teamsdet=vteamdet, loguser=memname,vclubid=0,vteamid=0)
       if pagename == "member_list":
          return render_template('member_admin_user_report.html')
+      if pagename == "memberadmin" and action == "getteamname":
+         vclubdet = getClubDetails(dbconn,0,"TEAMS")
+         vnextmember = request.form.get("memberid")
+         vdbaction = request.form.get("dbaction")
+         vfname = request.form.get("textfirstname")
+         vlname = request.form.get("textlastname")
+         vclubname = request.form.get("drpclubname")
+         vadd1 = request.form.get("textadd1")
+         vadd2 = request.form.get("textadd2")
+         vcity = request.form.get("textcity")
+         vemail = request.form.get("textemail")
+         vphone = request.form.get("textephone")
+         vdob = request.form.get("textdob")
+         vmemberstatus = request.form.get("drpstatus")
+         vadminaccess = request.form.get("drpaccess")
+         vteamdet = getTeamsDetails(dbconn,0,vclubname)
+         print(vfname)
+         print(vlname)
+         return render_template('member_admin_user.html',
+                                 dbaction=vdbaction,
+                                 clubsdet=vclubdet,
+                                 teamsdet=vteamdet,
+                                 loguser=memname,
+                                 vclubid=vclubname,
+                                 vteamid=0,
+                                 memberid=vnextmember,
+                                 fname=vfname,
+                                 lastname=vlname,
+                                 address1=vadd1,
+                                 address2=vadd2,
+                                 cityname=vcity,
+                                 emailid=vemail,
+                                 phonenumber=vphone,
+                                 dateofbirth=vdob,
+                                 vmemstatus=vmemberstatus,
+                                 vadmin=vadminaccess)
+
       if pagename == "admingetmemberdetail":
          dbmemberid=request.form.get("intmemberid")
          print("Getting details for member id ", dbmemberid)
@@ -279,14 +320,91 @@ def menu_navigate():
                                  grademaxage = v_max_age, 
                                  gradeid = v_gradeid,
                                  eligibledate=v_elig_date)
+      ##### for fixture details
+      if pagename == "fixture_inert":
+         vnextfixid = getNextID(dbconn,"fixtures","fixtureid")
+         print("Next fixtue id: ",vnextfixid)
+         return render_template('fixture_admin_user.html', action="INSERT",teamsdet=vteamdet,loguser=memname,vclubid=0,vteamid=0,txtfixtureid=vnextfixid)
+      if pagename == "fixture_update":
+         return render_template('fixture_admin_user.html', action="UPDATE",teamsdet=vteamdet,loguser=memname,vclubid=0,vteamid=0)
+      if pagename == "fixtureadmin" and action == "fetch_fixture_details":
+         v_fixid = request.form.get("txtfixtureid")
+         v_loguser = request.form.get("loguser")
+         v_memberid = request.form.get("memberid")
+         v_fixturedet = getfixtureDet(dbconn,v_fixid)
+         print("Date is: ",v_fixturedet[1])
+         return render_template('fixture_admin_user.html', dbaction="UPDATE",
+                                 txtfixtureid=v_fixturedet[0],
+                                 dtfixturedate=v_fixturedet[1],
+                                 vhometeamid=v_fixturedet[2],
+                                 vawayteamid=v_fixturedet[3],
+                                 txthomescore=v_fixturedet[4],
+                                 txtawayscore=v_fixturedet[5],
+                                 teamsdet=vteamdet,loguser=v_loguser
+                                 )
+      if pagename == "fixtureadmin" and action == "savefixturedetail":
+         memid = request.form.get("memberid")
+         loguser=request.form.get("loguser")
+
+         v_fixtureid = request.form.get("txtfixtureid")
+         v_fixturedate = request.form.get("dtfixturedate")
+         v_hometeam = request.form.get("drpteamnameh")
+         v_awayteam = request.form.get("drpteamnamea")
+         v_homescore = request.form.get("txthomescore")
+         v_awayscore = request.form.get("txtawayscore")
+         saveFixtureDetails(dbconn,v_fixtureid,v_fixturedate,v_hometeam, v_awayteam, v_homescore, v_awayscore)
+         return render_template('fixture_admin_user.html', dbaction="UPDATE",
+                                 teamsdet=vteamdet,loguser=memname,vclubid=0,vteamid=0)
+      if pagename == "fixture_list":
+         return render_template('fixture_admin_report.html', action="REPORT",teamsdet=vteamdet,loguser=memname,teamid=0)
+      if pagename == "fixtureadmin" and action == "get_fixtures":
+         v_teamid = request.form.get("drpteamname")
+         print("team id: ",v_teamid)
+         v_fixturedet = getTeamFixtures(dbconn,v_teamid)
+         print(v_fixturedet)
+         return render_template('fixture_admin_report.html', action="REPORT",teamsdet=vteamdet,loguser=memname,fixturedet=v_fixturedet, teamid=v_teamid)
+      ### For clubnews 
+      if pagename == "clubnews_inert":
+         vnextfixid = getNextID(dbconn,"clubnews","newsid")
+         print("Next fixtue id: ",vnextfixid)
+         return render_template('clubnews_admin_user.html', action="INSERT",clubsdet=vclubdet,loguser=memname,vclubid=0,txtnewsid=vnextfixid)
+      if pagename == "clubnews_update":
+         return render_template('clubnews_admin_user.html', action="UPDATE",clubsdet=vclubdet,loguser=memname,vclubid=0)
+      if pagename == "newsadmin" and action == "fetch_news_details":
+         v_newsid = request.form.get("txtnewsid")
+         v_loguser = request.form.get("loguser")
+         v_memberid = request.form.get("memberid")
+         v_newsdet = getNewsDet(dbconn,v_newsid)
+         print(v_newsdet)
+         print("Date is: ",v_newsdet[4])
+         return render_template('clubnews_admin_user.html', dbaction="UPDATE",
+                                 clubsdet=vclubdet,
+                                 txtnewsid=v_newsdet[0],
+                                 vclubid=v_newsdet[1],
+                                 txtnewsheader=v_newsdet[2],
+                                 dtnewsdate=v_newsdet[3],
+                                 txtnews=v_newsdet[4],
+                                 txtnewsbyline=v_newsdet[5]
+                                 )
+      if pagename == "newsadmin" and action == "save_news_detail":
+         v_newsid = request.form.get("txtnewsid")
+         v_clubid = request.form.get("drpclubname")
+         v_newsheader = request.form.get("txtnewsheader")
+         v_newsdate = request.form.get("dtnewsdate")
+         v_news = request.form.get("txtnews")
+         v_newsby = request.form.get("txtnewsbyline")
+         saveNewsDetails(dbconn,v_newsid,v_clubid,v_newsheader,v_newsdate,v_news,v_newsby)
+         return render_template('clubnews_admin_user.html', action="UPDATE",clubsdet=vclubdet,loguser=memname,vclubid=0)
+      if pagename == "clubnews_list":
+         return render_template('clubnews_admin_report.html', action="REPORT",clubsdet=vclubdet,loguser=memname,clubid=0)
+      if pagename == "newsadminreport" and action == "get_clubnews":
+         vclubid = request.form.get("drpclubname")
+         v_clubnewsdet = getAdminClubNews(dbconn,vclubid)
+         return render_template('clubnews_admin_report.html', action="REPORT",clubsdet=vclubdet,clubnews=v_clubnewsdet,loguser=memname,clubid=vclubid)
 
 
 
-
-
-
-
-
+"""
 def memberAction():
    print(request.method)
    if request.method == 'POST':
@@ -309,7 +427,8 @@ def memberAction():
                                  lastname=memdet[4],
                                  vclubid=memdet[1],
                                  vteamid=memdet[2]
-                                 )
+                                 ) 
+"""
 ###########################################################################################################
 
 
